@@ -1,0 +1,36 @@
+{
+  "files": {
+    "main.css": "/static/css/main.e0df1ae0.css",
+    "main.js": "/static/js/main.7dc653ec.js",
+    "static/media/Long-Cang-Regular.ttf": "/static/media/Long-Cang-Regular.c3a70aa0395fb3ef9e12.ttf",
+    "static/media/Long-Cang-Regular.woff": "/static/media/Long-Cang-Regular.57d801226cc257e4c1b9.woff",
+    "static/media/Long-Cang-Regular.eot": "/static/media/Long-Cang-Regular.957bbb78d06024c7a524.eot",
+    "static/media/Long-Cang-Regular.woff2": "/static/media/Long-Cang-Regular.e9393579526c65bc1619.woff2",
+    "static/media/title.png": "/static/media/title.ffa6f227b85b42f69f9f.png",
+    "static/media/sample.png": "/static/media/sample.11050a3478b543ac00a4.png",
+    "static/media/loading.mp4": "/static/media/loading.e43382fdf50bf913f128.mp4",
+    "static/media/egg-8.png": "/static/media/egg-8.c76498bb25ec08e20eeb.png",
+    "static/media/egg-5.png": "/static/media/egg-5.937952096e367cde627a.png",
+    "static/media/egg-3.png": "/static/media/egg-3.f5936792aff0cdd26d39.png",
+    "static/media/start.png": "/static/media/start.92c9c6a2d5fed5ae4ea4.png",
+    "static/media/egg-1.png": "/static/media/egg-1.37454fb7a0ed21c728a0.png",
+    "static/media/egg-4.png": "/static/media/egg-4.e0c1e1b02410ae57feab.png",
+    "static/media/egg-6.png": "/static/media/egg-6.1fc86dad89bb58a9feff.png",
+    "static/media/egg-7.png": "/static/media/egg-7.ca8947de8112e82734ee.png",
+    "static/media/egg-2.png": "/static/media/egg-2.0b405335f725602c5873.png",
+    "static/media/Long-Cang-Regular.svg": "/static/media/Long-Cang-Regular.0bdbfff8682262157930.svg",
+    "static/media/copy1.png": "/static/media/copy1.bcd3f0e3ee8e99d91f48.png",
+    "static/media/line.png": "/static/media/line.cb619712d6cd812bb8e8.png",
+    "static/media/again.png": "/static/media/again.b854981f42029103b573.png",
+    "static/media/copy.png": "/static/media/copy.f82eec33d9f02ccfacea.png",
+    "static/media/logo.png": "/static/media/logo.1f62986c2387c278bf00.png",
+    "static/media/logo.svg": "/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/index.html",
+    "main.e0df1ae0.css.map": "/static/css/main.e0df1ae0.css.map",
+    "main.7dc653ec.js.map": "/static/js/main.7dc653ec.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e0df1ae0.css",
+    "static/js/main.7dc653ec.js"
+  ]
+}

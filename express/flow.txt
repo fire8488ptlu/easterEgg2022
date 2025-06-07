@@ -1,0 +1,490 @@
+GOAL:
+mongoose 基本操作
+js 檔案import export
+
+
+npm init
+npm i express
+npm i morgan (http 錯誤 彩色提示)
+npm i dotenv {
+    add config.env file
+    setting package.json env varilabe 
+}
+npm install -g nodemon (nodemon 要用global)
+npm i slugify
+
+//----各種init 的設定----
+npm i express-rate-limit  
+npm i helmet
+npm i express-mongo-sanitize
+npm i xss-clean
+npm i hpp
+
+//----user model ----- 
+npm i validator
+npm i crypto
+npm i bcryptjs
+
+//---authController--
+npm i jsonwebtoken
+
+// send email
+npm i nodemailer  
+
+
+// mongo db 流程
+su  <root>
+
+sudo systemctl start mongod
+
+sudo systemctl stop mongod
+
+sudo systemctl restart mongod
+
+sudo systemctl status mongod
+
+nmap -p 27017  127.0.0.1 
+
+vim /etc/mongod.conf
+
+mongo --host ip -u user name -p password
+
+
+
+
+server.js 才是整個的樞紐 app.js 就是先把express 的所有route middleware 整合起來
+再丟給serever.js 
+
+再express route裡面 只有 error的 route 會透過next() 統一傳送到專們
+處理error的資料流，類似redux改念
+剩下正常的就是直接res.status().json() 直接回傳結果就好
+釐清 routers 模組 
+--- basic router version --- route model controller
+為什麼會  觸發 catch error, model 模組深入研究 
+
+1. 先去create 一些data 然後 做 後續的測試 (postman)
+
+
+model 細節攻略 !! 要回顧影片 把每個紀錄寫下來 ???
+1,model document object 裡面的validate trim enum select
+2,model document object 裡面的{toJSON:{virtuals:true},toObject:{virtuals:true}}
+3.pre post order & virtual.get()
+
+
+---next
+Authentication 模組
+先用post man 把所有route 功能都側看看
+
+
+--- 
+model controller handlerFactory 之間如何串接整合 
+model 的細節  populate viratual field   reviewSchema.statics.calcAverageRatings ???
+controller 的細節 
+handlerFactory 的細節
+
+
+從route 功能面去認識每一段code
+userRoutes 全部測試
+tourRoutes 
+reviewRoutes
+
+
+section 11 完後要做一個筆記
+
+server.js {
+    app.js {
+
+        rateLimit,
+        helmet, // header
+        mongoSanitize, //nosql injection
+        xss,  // Data sanitization against XSS
+        hpp,  //Prevent parameter pollution
+
+        reviewRoutes{
+            authController{
+                proctect,
+                restrictTo(admin,lead-guide,guide),
+            },
+            reviewController{
+                setTourUserIds(??),
+                factory{
+                    gatall,
+                    getOne,
+                    createOne,
+                    updateOne,
+                    deleteOne,
+                }
+            },
+    
+        }
+        tourRoutes{
+            authController{
+                proctect,
+                restrictTo(admin,lead-guide,guide),
+            },
+            tourController{
+                aliasTopTours,(設定mongo parameter 然後傳到factory->getall撈資料)
+                factory{
+                    gatall,
+                    getOne,
+                    createOne,
+                    updateOne,
+                    deleteOne,
+                },
+                getTourStats(mongodb aggregate 組合拳搜尋),
+                getMonthlyPlan(mongodb aggregate組合拳),
+                getToursWithin(mongodb aggregate)
+                getDistances(mongodb aggregate),
+                TourModel{
+                    guides(mongoose.ref to User) foreignkey to User,
+                    toJSON,toObject{virtuals:true} // virtual fields output as json also as object
+                    tourSchema.index (?),
+                    durationWeeks(virtual field),
+                    reviews(virtual field with foreignkey Review裡面的tour欄位 然後Review->tour 本身又是foreignkey 到 tour 裡面???? )
+                    pre save(把name lower:true)
+                    pre find( secretTour != true, populate(path:"guides",select:"")(??) )
+                    pre post(date.now() - this.start 查詢的時間) // 可加可不加
+                }
+            }
+
+
+        }
+        userRoutes{
+            authController{
+                const signToken, createSendToken,
+                signup(User.create user.correctPassword)//這裡的create沒有用factroy做，因為有token一堆的程序,
+                login,
+                protect(解密token用ID尋找是否存在,user.changePasswordAfter),
+                restrictTo(身分限制),
+                forgotPassword(找ID，Sendemail寄出,user.createPasswordResetToken),
+                resetPassword(url帶forgotpassword的token), // resetPassword 跟 forgetpassword 是一起的
+                updatePassword(user.correctPassword), //login 才能去更改
+            },
+            userController{
+                handlerFactory
+                UserModel{
+                    validate{
+                        //內建的
+                        validator.isEmail
+                        // 客制的function
+                        validator: function(el) {
+                            return el === this.password;
+                        },
+                    },
+                    pre save,
+                    pre find, (populate with select -field -:不要的field or select要"name photo")
+                    virtual(method){
+                        // 這樣的function 也是可以再controller做
+                        // 用一個這樣的function就是簡潔程式碼而已
+                        correctPassword,(確認 passwordcurrent,password)
+                        changedPasswordAfter,(?)
+                        createPasswordResetToken(token 製造機),
+                    }
+                }
+                AppError,
+                catchAsync,
+
+            }
+        },
+
+        globalErrorHandler (errorController){
+            AppError 到底怎麼跟 ErrorController 串在一起 (??)
+        }
+
+}
+
+
+
+
+vitrual method 的意義??  
+controller 也是可以自己拉資料過來比對檢查
+但就是做成virtual method 讓程式簡潔而已
+
+AppError 到底怎麼跟 ErrorController 串在一起 ??
+11 - 151 開始重看瞭解一下 virtual model那一部分
+
+Embedding (only for save data )
+//guidesPromises 拿到的是 Promises function資料
+//Promise.all(guidesPromises) 才是我們要拿的資料
+tourSchema.pre('save', async function(next){
+    //guides['aa','bb']
+    //map() 把 aa ,bb 透過findbyid方法 變成 guides[{role,id,email},{role,id,email}]
+    //map() 就是用於array aa->{role,id,email}的function
+    const guidesPromises = this.guides.map(async(id)=>await User.findById(id));
+    this.guides = await Promise.all(guidesPromises);
+})
+
+Referencing (not save in docuemnt but use foreignkey)
+document save is ObjectId (document 還是有save objID) if output the userdata use "populating"
+
+Populate
+//把foriegnkey的資料('guides') 補滿然後傳出去，但document本身只有objID
+const tour = Tour.findById(req.params.id).populate('guides')
+// path(選擇的field ,select:不要顯示的資料加上"-")
+const tour = Tour.findById(req.params.id).populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt'
+});
+
+// pre(find) findbyid findall findandupdate .... 在model尋找的時候 就不要顯示不該顯示的field
+tourSchema.pre(/^find/,function(next){
+    this.populate({
+        path:'guides',
+        select: '-__v -passwordChangedAt'
+    })
+})
+
+
+Review Model create 
+(創model 然後 controller 有基本的get post, 再 routes去接 controller)
+(routes 再去綁 authController 或是 restrict to )
+(最後再model 補上 ^find populate)
+// review/ rating /createdAt /ref to tour / ref to user
+
+// user id 其實不用填 因為review 之前有 auth.protect保護 所以可以直接從cookie撈id
+{
+    "review":"amazing tour!",
+    "rating":5,
+    "tour":"asdfsbfa778"
+    "user":"5cfsdfsdf"
+}
+// postman 利用 {jwt} {url}  讓彼此共用value就不用貼來貼去了
+
+// populate twice
+reviewSchema.pre.find{
+    this.populate({
+        path:'tour',
+        select:'name',
+    }).populate({
+        path:'user',
+        select:'name photo'
+    })
+}
+
+// virtual populate (popluate without docuemnt's objID) like virtual fields with populate
+// 解決parent ref and child ref 
+// 虛擬的reviews  field  
+tourSchema.virtual('reviews',{
+    ref:"Review",            // 這兩個ref foreignField 是指向外面的
+    foreignField:"tour",     // (可以這樣理解 Review->tour = localField的_id)
+    localField:"_id"         // 這個是內部的 id is actually stored in this model
+})
+// 這樣的東西是為了讓兩個model connect 起來 (但是怎麼樣的原理串起來(??) 這樣的目的是為了不要讓tour(parent)儲存一堆的review(child))
+// review 至少有parent ref (保留parent's objID)
+// tourmodel 的 reviews欄位 會去整個 Review model 裡面的 找 tour = localField_id 的資料 (原理應該是這樣) 
+這樣應該比存了一堆的child id 找還快，因為前者只要找自己的id就好，後者還要找數個child id
+// 要串起來的條件就是child model 要有一個foreign 到 parent的欄位 才能串
+
+//parent Referencing populate (parent 需要populate review 知道是name date content ....) 
+
+
+//child no need to populate(不用在populate parent 因為本身已經在parent裡面了，沒必要再顯示parent的詳細資訊)
+reviewSchema.pre.find{
+    this.populate({
+        path:'user',
+        select:'name photo'
+    })
+}
+
+//nested routes 
+
+router
+	.route('/:tourId/reivews')
+	.post(
+	  authController.protect,
+	  authController.restrictTo('users'),
+	  reviewController.createReview
+	)
+
+//因為post review的時候 不可能去額外輸入  所以tour從url params 去拿 
+if(!req.body.tour) req.body.tour = req.params.tourId;
+if(!req.body.user) req.body.user = req.user.id   //req.user = currentUser; (authController 最後過的話會綁一個這個)
+
+// mergeParams
+把reivew nested routes 從tourRoutes近來 再 轉道 reviewRoutes
+打開{mergeParams:true}
+// You must pass {mergeParams: true} to the child router if you want to access the params from the parent router.
+
+// 得到mergeParams的reviewController
+
+exports.getAllReviews =>{
+    let filter = {}
+    if (req.params.tourId) filter = {tour:req.params.tourId} //因為mergeparams 所以有value
+    const reivews = await Review.find(filter) 
+    //但如果 await Review.find({}) 這樣會找到什麼?
+}
+
+// factory 的由來 (基本上所有的東西應該都是由factory來做 除了需要authtoken的驗證的 或是 特殊搜尋的不用以外)
+原本model 是從controller 那邊引進
+現在改成從route import 然後 變成model 傳給factory
+
+// user delete的部分 可以真的刪掉 或是 active:false就好
+
+// only for admin & not update passwords with this (因為用了findByIdAndUpdate all the safe middleware is not run)
+// 倒底是怎麼樣的safe middleware ??
+exports.updateUser = factory.updateOne(User)
+
+可以增加middleware before factory
+reviewController.setTourUserIds,
+reviewController.createReview
+
+//exports.getOne = (Model, popOptions) 
+// 因為factory 接受兩個parameter Model->model  PopOption->要populate的參數設定
+exports.getTour = factory.getOne(Tour,{path:'reviews',select:"(選擇要populate的欄位)"})
+
+雖然 exports.getOne = (Model, popOptions) 要兩個parameter 但是可以選擇傳一個就好
+exports.getTour = factory.getOne(Tour,{path:'reviews'})
+exports.getReview = factory.getOne(Review)
+
+// middleware 來配合factory 而不是從facotry裡面去設if else
+// user想要讀取getone factory 但是getone factory讀的是param id 
+router.get(
+    '/me',
+    authController.protect,
+    userController.getMe,  // 這段作做的就是 req.params.id = req.user.id;
+    userController.getUser (factory getOne)
+)
+
+
+// import Devdata 引進測試資料的流程
+
+額外弄一個 import-dev-data.js 然後用
+// passwordconfirm 
+await User.create(users, { validateBeforeSave: false });
+
+1.config 讀取mongo基本資料 用mongoose connect他
+2. 做兩個function importData , deletaData
+3. process.argv[2]  --import or --delete 去判斷
+nodemon import-dev-data --import  (import cmd)
+nodemon import-dev-data --delete  (delete cmd)
+
+
+// mongodb index 功能
+// 原理就是把長搜索的欄位做index(sort好的欄位) 加快瀏覽速度
+// 但就是會占用mongodb裡面的空間
+
+const features =new APIFeatues(Model.find(filter),req,query)
+    .filter()
+    .sort()
+    .limitFiedlds()
+    .paginate();
+const doc = await features.query.explain() 
+//這個explain() 會詳細給出完整的報告 掃了幾個document ..之料
+//如果有建立index 就不需要掃到那麼多document 自然搜索速度就會快
+
+// 1 -1 只是升降排列的差別
+// 這裡建立兩個index (1.第一個是price 跟 ratingsAverage的組合)
+// 第二個是slug 欄位
+tourSchema.index({price:1,ratingsAverage:-1})
+tourSchema.index({slug:1})
+// 要定期察看index欄位 有沒有已經停止更新的 就要刪掉不然站欄位
+
+
+// tourmodel 裡面有ratingsAverage , ratingsQuantity兩個欄位
+// 這樣要撈這些數據從這裡拿就好，就不要頻繁去計算
+// 所以每當review更新 (post save)會把同樣tourid的一起搜尋，然後再更新到tourmodel裡面
+
+static method有 this??
+this.constructor ??
+
+
+reviewSchema.statics.calcAverageRatings = async function(tourId){
+    const stats =await this.aggregate([
+        {
+            $match:{tour:tourId}
+        },
+        {   // 這段有點不懂??
+            $group:{
+                _id: '$tour',
+                nRating: {$sum:1},
+                avgRating:{$avg:'$rating'}
+            }
+        }
+    ]);
+    console.log(stats);  // {_id:(tourid),nRating:5(review 數量),avgRating:3.8(平均)}
+    //去tourmodel裡面更新  資料就儲存在stats李
+    await Tour.findByIdAndUpdate(tourId,{
+        ratingsQuantity:stats[0].nRating,
+        ratingsAverage:stats[0].avgRating
+    });
+
+    //post function 是沒有next()!!!
+    reviewSchema.post("save",function(){
+        this.constructor.calcAverageRatings(this.tour);
+    })
+}
+
+
+
+因為沒有pre update這個功能只能這樣才成兩部分做
+// 因為post 完之後 沒辦法執行 this.r = await this.findOne();
+// 所以找步道tourId 所以pre find為了找tourId
+// 然後 post 在做calcAverageRatings
+// 之前透過 this.r(找到tourId 然後到calcAve去更新) , constructor 的傳遞方式傳遞資訊(非透過function()裡面放引數)
+// findByIdAndUpdate
+// findByIdAndDelete
+// 共用一個 /^findOneAnd/
+// 他是透過找touid的原理去更新 所以 update跟delete沒差
+reviewSchema.pre(/^findOneAnd/,async function(next){
+    this.r = await this.findOne();
+    console.log(this.r);
+    next();
+})
+
+reviewSchema.post(/^findOneAnd/,async function(){
+    await this.r.constructor.calcAverageRatings(this.r.tour)
+
+})
+
+// 如何使用 mongodb GeoJson 怎麼用??
+// chromeDevtool debug 用
+npm install -g ndb
+npm run debug (要先在package.json 設定好)
+
+//mongo有很多query通常用法就是選定一個model 指定好欄位 把query放進去filter
+ex: //有$都是mongo 內建的
+const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
+});
+
+const stats = await Tour.aggregate([
+    {
+      $match: { ratingsAverage: { $gte: 4.5 } }
+    },
+    {
+      $group: {
+        _id: { $toUpper: '$difficulty' },
+        numTours: { $sum: 1 },
+        numRatings: { $sum: '$ratingsQuantity' },
+        avgRating: { $avg: '$ratingsAverage' },
+        avgPrice: { $avg: '$price' },
+        minPrice: { $min: '$price' },
+        maxPrice: { $max: '$price' }
+      }
+    },
+    {
+      $sort: { avgPrice: 1 }
+    }
+    // {
+    //   $match: { _id: { $ne: 'EASY' } }
+    // }
+  ]);
+
+// 再mongo compass上面會看到 2d地圖
+tourSchema.index({startLocation:'2dsphere'})
+
+// 因為pre aggregate 會造成 getNear沒有在first 會error
+tourSchema.pre('aggregate',function(next){
+    this.pipeline().unshift({$match:{secretTour:{$ne:true}}}):
+})
+$geoNear is only valid as the first stage in a pipeline
+
+
+
+12 , 13 , 14
+
+
+
+report :
+
+掌握middleware的藝術(auth 審核) 減少duplicate function(factory,utils)，讓code更好管理

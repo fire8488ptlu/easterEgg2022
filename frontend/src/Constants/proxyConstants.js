@@ -1,0 +1,1 @@
+export const PROXY_SERVER = 'http://522b-118-163-182-115.ngrok.io'

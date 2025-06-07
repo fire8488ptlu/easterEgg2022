@@ -1,0 +1,234 @@
+*,
+*::before,
+*::after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  font-family: "Do Hyeon", sans-serif;
+  background: linear-gradient(10deg, #f4ce00, #dc006a);
+  background-repeat: no-repeat;
+}
+
+html {
+  height: 100%;
+}
+
+.animate_background {
+  background: black;
+}
+
+.animate_background_1 {
+  background: #ffffff;
+}
+
+.title1 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 5px 0px;
+  &__box {
+    width: 360px;
+  }
+
+  &__img {
+    // float: left;
+    // flex-wrap: wrap;
+    justify-content: center;
+    width: 70px;
+    height: auto;
+    margin-top: 10px;
+    margin-left: 10px;
+  }
+  &__img1 {
+    // zoom: 1.08;
+    // transform: translateX(-17px);
+    float: left;
+    // flex-wrap: wrap;
+    // justify-content: center;
+    width: 360px;
+    height: auto;
+  }
+}
+
+.container_1 {
+  padding-left: 3px;
+
+  // transform: translateX(3px);
+  display: flex;
+  flex-wrap: wrap;
+  width: 360px;
+  margin: auto;
+  // align-items: center;
+}
+
+.square {
+  margin: 1.2px;
+  border: 1.2px solid #34312b;
+  flex: 0 0 115px; //112
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 115px; //112
+  background: rgb(39, 39, 39);
+
+  //   &.square:not(:nth-child(3n)) {
+  //     margin-left: 5px;
+  //     margin-right: 5px;
+  //   }
+  //   &.square:not(:nth-child(n + 7)) {
+  //     margin-top: 5px;
+  //     margin-bottom: 5px;
+  //   }
+
+  &.is-active {
+    border: 4.6px solid rgb(255, 255, 255);
+  }
+}
+
+.square__content {
+  // font-size: 2.5rem;
+  width: 80px; //85
+  height: auto;
+}
+
+.square__start-btn {
+  background: rgb(228, 54, 2);
+  color: #e97573;
+  // font-size: 1.2em;
+  cursor: pointer;
+
+  &:hover {
+    background: lighten(rgb(255, 255, 255), 30%);
+  }
+}
+
+.bch__class {
+  font-weight: bolder;
+  letter-spacing: 2px;
+  padding-top: 15px;
+  text-align: center;
+  align-items: center;
+  font-size: 10px;
+  margin: 0px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.bch {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 360px;
+  height: 2rem;
+  overflow-y: hidden;
+}
+
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+//頁面2
+
+.container2 {
+  // flex container 兩個設定 display: flex-wrap: wrap;
+  // display: none;
+  // Start run 完之後將display 改成 flex
+  width: 380px;
+  // height: 1000px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin: 8px auto;
+}
+
+.container3 {
+  // flex container 兩個設定 display: flex-wrap: wrap;
+  // display: none;
+  // Start run 完之後將display 改成 flex
+  width: 360px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin: 8px auto;
+}
+
+.nav {
+  // container2 button contianer 設定
+  &__list {
+    height: auto;
+    align-items: center;
+    margin: 1px;
+    border: none;
+    overflow: hidden;
+  }
+
+  &__item {
+    display: flex;
+    width: 120px;
+    height: 120px;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+  }
+
+  &__item:hover {
+    background-color: lighten(#1d1d1d, 25%);
+  }
+
+  &__icon1 {
+    max-width: 50%;
+    height: 80px;
+  }
+
+  &__icon2 {
+    max-width: 50%;
+    height: 80px;
+  }
+
+  &__icon3 {
+    max-width: 270px;
+    // height: 3rem;
+  }
+}
+
+div.box {
+  display: flex;
+  flex-wrap: wrap;
+  width: 360px;
+  height: auto;
+  align-items: center;
+  justify-content: center;
+  background-color: #757575;
+}
+
+img.blesscard {
+  display: flex;
+  width: 70vw;
+  height: auto;
+  align-items: center;
+}
+
+// @media screen and (max-width: 520px) {
+//   div.box {
+//     width: 360px;
+//     height: auto;
+//   }
+//   .container2 {
+//     width: 360px;
+//   }
+// }
